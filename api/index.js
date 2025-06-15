@@ -1,25 +1,27 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const cors = require ("cors");
+const cors = require("cors");
 const connectDB = require("./database/database");
-const UserDAO = require("/dao/UserDAO");
+const UserDAO = require("./dao/UserDAO");
 
 connectDB();
-// load environment variables
 
+// Load environment variables
+dotenv.config();
+
+// Create Express app
 const app = express();
 
 // Middlewares
-app.use(express.json()); // parseo JSON request
-app.use(cors({           // Enable CORS wit configuration
-    origin: true,        // Allow all origins (restrict in production)
-    credentials: true    // Allow credentials (cookies, authorization headers)
+app.use(express.json()); // Parse JSON requests
+app.use(cors({           // Enable CORS with configuration
+  origin: true,          // Allow all origins (restrict in production)
+  credentials: true      // Allow credentials (cookies, authorization headers)
 }));
 
-// Healt check endopoint
-
+// Health check endpoint
 app.get("/", (req, res) => {
-    res.send("Server is running");
+  res.send("Server is running");
 });
 
 // Instantiate UserDAO
@@ -32,13 +34,10 @@ app.get("/api/v1/users/:id", (req, res) => userDAO.getById(req, res));
 app.put("/api/v1/users/:id", (req, res) => userDAO.update(req, res));
 app.delete("/api/v1/users/:id", (req, res) => userDAO.delete(req, res));
 
-
-//configure port
+// Configure port
 const PORT = process.env.PORT || 3000;
 
-// start server
-
+// Start server
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
-
