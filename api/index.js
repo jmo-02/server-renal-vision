@@ -16,9 +16,16 @@ const app = express();
 // Middlewares
 app.use(express.json()); // Parse JSON requests
 
-app.use(cors({           // Enable CORS with configuration
-  origin: process.env.FRONTEND_URL || "http://localhost:5173", // Solo permite el frontend definido en .env
-  credentials: true      // Allow credentials (cookies, authorization headers)
+const allowedOrigins = process.env.FRONTEND_URL.split(",");
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
 }));
 
 // Health check endpoint
@@ -47,7 +54,7 @@ app.get("/api/v1/users/email/:email", (req, res) => userDAO.getByEmail(req, res)
 app.put("/api/v1/quizzes/:id", (req, res) => quizDAO.update(req, res));
 app.get("/api/v1/quizzes/ranking", (req, res) => quizDAO.getRanking(req, res)); // Endpoint para ranking
 app.delete("/api/v1/quizzes/:id", (req, res) => quizDAO.delete(req, res));
-app.get("/api/v1/quizzes/ranking", (req, res) => quizDAO.getRanking(req, res));
+
 
 // Configure port
 const PORT = process.env.PORT || 3000;
