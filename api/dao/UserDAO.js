@@ -63,6 +63,20 @@ class UserDAO {
       res.status(500).json({ message: `Error deleting document: ${error.message}` });
     }
   }
+
+  async getByEmail(req, res) {
+    try {
+      const { email } = req.params;
+      const user = await this.model.findOne({ email });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ message: `Error getting user: ${error.message}` });
+    }
+  }  
+  
 }
 
 module.exports = UserDAO;
